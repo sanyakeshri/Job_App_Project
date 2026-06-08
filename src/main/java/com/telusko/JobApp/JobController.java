@@ -1,57 +1,46 @@
-//package com.telusko.JobApp;
-//
-//import org.springframework.stereotype.Controller;
-//import org.springframework.web.bind.annotation.PostMapping;
-//import org.springframework.web.bind.annotation.RequestMapping;
-//import org.springframework.web.bind.annotation.RequestParam;
-//import org.springframework.web.bind.annotation.ResponseBody;
-//
-//@Controller
-//public class JobController {
-//
-//    @RequestMapping({"/" , "home"})
-//    public String home(){
-//
-//        return "home";
-//    }
-//
-//    @RequestMapping("addJob")
-//    public String addJob(){
-//        return "addjob";
-//    }
-//
-//    @PostMapping("handleForm")
-//    @ResponseBody
-//    public String handleForm(
-//            @RequestParam(required = false) String postId
-//    ){
-//        return "WORKING";
-//    }
-//}
-
 package com.telusko.JobApp;
 
+import com.telusko.JobApp.model.JobPost;
+import com.telusko.JobApp.services.JobService;
+
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @Controller
 public class JobController {
 
-    @RequestMapping({"/","/home"})
+    @Autowired
+    private JobService service;
+
+    @GetMapping({"/", "/home"})
     public String home() {
         return "home";
     }
 
-    @RequestMapping("/addJob")
+    @GetMapping("addJob")
     public String addjob() {
         return "addjob";
     }
 
-    @PostMapping("/handleForm")
-    @ResponseBody
-    public String handleForm(
-            @RequestParam(required = false) String postId
-    ) {
-        return "WORKING";
+    @PostMapping("handleForm")
+    public String handleForm(JobPost jobpost, Model model) {
+
+        service.addJob(jobpost);
+
+        model.addAttribute("jobPost", jobpost);
+
+        return "success";
+    }
+
+    @GetMapping("viewalljobs")
+    public String viewJobs(Model m){
+        List<JobPost> jobs = service.getAllJob();
+        m.addAttribute("jobPosts" , jobs);
+
+        return "viewalljobs";
     }
 }
